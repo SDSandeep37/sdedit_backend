@@ -1,4 +1,5 @@
 import app from "./src/app.js";
+
 import { disconnectDatabase } from "./src/config/db.js";
 
 const PORT = process.env.PORT || 5000;
