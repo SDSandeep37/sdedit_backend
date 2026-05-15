@@ -36,6 +36,7 @@ import communityRoutes from "./routes/communityRoutes.js";
 import communityMemberRoutes from "./routes/communityMemberRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
+import voteRotes from "./routes/voteRoutes.js";
 
 // Use Routes
 app.use("/sdedit/user", userRoutes);
@@ -44,6 +45,7 @@ app.use("/sdedit/community-member", communityMemberRoutes);
 app.use("/sdedit/post", postRoutes);
 app.use("/sdedit/comment", commentRoutes);
 app.use("/sdedit/reply", commentRoutes);
+app.use("/sdedit/vote", voteRotes);
 // app.use("/sdedit/test", testRoutes);
 
 //global error handler

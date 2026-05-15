@@ -252,55 +252,6 @@ export const getAllReplies = async (request, response) => {
   }
 };
 
-export const deleteCommentReply = async (request, response) => {
-  const { commentId } = request.params;
-  if (!commentId) {
-    return response.status(400).json({
-      success: false,
-      message: "Comment key is missing",
-    });
-  }
-  const { id } = request.user;
-  try {
-    //check user is the creator of the comment
-    const isCreator = await prisma.comment.findUnique({
-      where: {
-        id: commentId,
-        authorId: id,
-      },
-    });
-    if (!isCreator) {
-      return response.status(401).json({
-        success: false,
-        message: "Unauthorised access! ",
-      });
-    }
-    const deleteComment = await prisma.comment.delete({
-      where: {
-        id: commentId,
-      },
-    });
-    if (!deleteComment) {
-      return response.status(404).json({
-        success: false,
-        message: "Not found",
-      });
-    }
-    return response.json({
-      success: true,
-      message: "Deleted successfully",
-      key: commentId,
-    });
-  } catch (error) {
-    console.error("Error occured while deleting comment/reply", error);
-    response.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-};
-
 export const updateComment = async (request, response) => {
   if (!request.body) {
     return response.status(400).json({
@@ -358,6 +309,54 @@ export const updateComment = async (request, response) => {
     });
   } catch (error) {
     console.error("Error occured while updating comment/reply", error);
+    response.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+export const deleteCommentReply = async (request, response) => {
+  const { commentId } = request.params;
+  if (!commentId) {
+    return response.status(400).json({
+      success: false,
+      message: "Comment key is missing",
+    });
+  }
+  const { id } = request.user;
+  try {
+    //check user is the creator of the comment
+    const isCreator = await prisma.comment.findUnique({
+      where: {
+        id: commentId,
+        authorId: id,
+      },
+    });
+    if (!isCreator) {
+      return response.status(401).json({
+        success: false,
+        message: "Unauthorised access! ",
+      });
+    }
+    const deleteComment = await prisma.comment.delete({
+      where: {
+        id: commentId,
+      },
+    });
+    if (!deleteComment) {
+      return response.status(404).json({
+        success: false,
+        message: "Not found",
+      });
+    }
+    return response.json({
+      success: true,
+      message: "Deleted successfully",
+      key: commentId,
+    });
+  } catch (error) {
+    console.error("Error occured while deleting comment/reply", error);
     response.status(500).json({
       success: false,
       message: "Internal server error",
