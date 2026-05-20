@@ -320,6 +320,25 @@ export const getAllPost = async (request, response) => {
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        votes: {
+          select: {
+            value: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
     });
 
     if (!posts) {
@@ -331,10 +350,24 @@ export const getAllPost = async (request, response) => {
     posts.forEach((post) => {
       delete post.updateAt;
     });
+    const formattedPosts = posts.map((post) => {
+      const upvotes = post.votes.filter((vote) => vote.value === 1).length;
+      const downvotes = post.votes.filter((vote) => vote.value === -1).length;
+      return {
+        ...post,
+        authorId: post.author.id,
+        authorName: post.author.name,
+        authorAvatar: post.author.avatar,
+        upvotes,
+        downvotes,
+        comments: post._count.comments,
+      };
+    });
+
     return response.json({
       success: true,
       message: "Post List",
-      posts,
+      posts: formattedPosts,
     });
   } catch (error) {
     console.error("Error occured while getting posts", error);

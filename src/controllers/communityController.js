@@ -48,6 +48,7 @@ export const createCommunityController = async (request, response) => {
     const community = await prisma.community.create({
       data: {
         name,
+        description,
         creatorId: id,
       },
     });
@@ -340,6 +341,21 @@ export const getAllCommunity = async (request, response) => {
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        _count: {
+          select: {
+            members: true,
+          },
+        },
+        members: {
+          where: {
+            userId: id,
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     if (!communities) {
@@ -351,10 +367,15 @@ export const getAllCommunity = async (request, response) => {
     communities.forEach((community) => {
       delete community.updateAt;
     });
+    const formattedCommunities = communities.map((community) => ({
+      ...community,
+      memberCount: community._count.members,
+      joined: community.members.length > 0,
+    }));
     return response.json({
       success: true,
       message: "Community List",
-      communities,
+      communities: formattedCommunities,
     });
   } catch (error) {
     console.error("Error occured while getting communities", error);
@@ -365,6 +386,55 @@ export const getAllCommunity = async (request, response) => {
     });
   }
 };
+// export const getAllCommunity = async (request, response) => {
+//   const { id } = request.user;
+//   if (!id) {
+//     return response.status(401).json({
+//       success: false,
+//       message: "Please login to access the contents",
+//     });
+//   }
+//   try {
+//     const communities = await prisma.community.findMany({
+//       orderBy: {
+//         createdAt: "desc",
+//       },
+//       include: {
+//         _count: {
+//           select: {
+//             members: true,
+//           },
+//         },
+//       },
+//     });
+
+//     if (!communities) {
+//       return response.status(404).json({
+//         success: false,
+//         message: "No community found!",
+//       });
+//     }
+//     communities.forEach((community) => {
+//       delete community.updateAt;
+//     });
+//     const formattedCommunities = communities.map((community) => ({
+//       ...community,
+//       memberCount: community._count.members,
+//     }));
+//     return response.json({
+//       success: true,
+//       message: "Community List",
+//       communities: formattedCommunities,
+//     });
+//   } catch (error) {
+//     console.error("Error occured while getting communities", error);
+//     response.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//       error: error.message,
+//     });
+//   }
+// };
 export const getCommunity = async (request, response) => {
   const { id } = request.user;
   if (!id) {

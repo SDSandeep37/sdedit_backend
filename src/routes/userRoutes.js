@@ -5,6 +5,7 @@ import {
   register,
   updateAvatar,
   updateUserDetailsController,
+  userSession,
 } from "../controllers/userController.js";
 import { verifyToken } from "../middlewars/authMiddleware.js";
 import { createImageUploader } from "../utils/uploads.js";
@@ -21,4 +22,5 @@ router.post("/login", login);
 router.post("/logout", verifyToken, logout);
 router.put("/update", verifyToken, updateUserDetailsController);
 router.post("/avatar", verifyToken, uploadAvatarImage, updateAvatar);
+router.get("/session", verifyToken, userSession);
 export default router;

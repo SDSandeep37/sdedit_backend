@@ -155,7 +155,7 @@ export const login = async (request, response) => {
     if (!isPasswordValid) {
       return response.status(401).json({
         success: false,
-        message: "Invalid email or password-",
+        message: "Invalid email or password",
       });
     }
     // generating json web token
@@ -296,6 +296,39 @@ export const updateUserDetailsController = async (request, response) => {
     });
   } catch (error) {
     console.error("Error occured while updating user details", error);
+    response.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export const userSession = async (request, response) => {
+  const { id } = request.user;
+  if (!id) {
+    return response.status(401).json({
+      success: false,
+      messge: "Session not available",
+    });
+  }
+  try {
+    const user = await prisma.users.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (user) {
+      return response.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error occured while getting user session", error);
     response.status(500).json({
       success: false,
       message: "Internal server error",
