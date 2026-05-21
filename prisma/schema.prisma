@@ -11,7 +11,107 @@ datasource db {
   provider = "postgresql"
 }
 
-model Users {
+// model Users {
+//   id        String   @id @default(cuid())
+//   name      String
+//   email     String   @unique
+//   password  String
+//   avatar    String?
+//   bio       String?
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   // Relations
+//   communities       CommunityMember[] //one user can join multiple community
+//   createdCommunites Community[] //one user can create multiple community
+//   posts             Post[] // one user can create multiple post
+//   comments          Comment[] // one user can create multiple comment
+//   votes             Vote[]
+// }
+
+// model Community {
+//   id          String  @id @default(cuid())
+//   name        String  @unique
+//   description String?
+//   banner      String?
+//   avatar      String?
+//   creatorId   String
+//   creator     Users   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+//   createdAt DateTime @default(now())
+//   updateAt  DateTime @updatedAt
+
+//   // Relations
+//   members CommunityMember[] // one community can have multiple members
+//   posts   Post[] // one community can have multiple posts
+// }
+
+// model CommunityMember {
+//   id          String    @id @default(cuid())
+//   userId      String
+//   communityId String
+//   user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+//   joinedAt    DateTime  @default(now())
+
+//   @@unique([userId, communityId])
+// }
+
+// model Post {
+//   id        String   @id @default(cuid())
+//   title     String
+//   content   String
+//   imageUrl  String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   authorId    String
+//   communityId String
+//   author      Users     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+//   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+//   // Relations
+//   comments Comment[] //one post can have multiple comments
+//   votes    Vote[]
+// }
+
+// model Comment {
+//   id        String   @id @default(cuid())
+//   content   String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   //foregin keys
+//   authorId String
+//   postId   String
+
+//   parentId String?
+//   author   Users   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+//   post     Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+//   // self relation for nested comments
+//   parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+//   replies Comment[] @relation("CommentReplies")
+//   votes   Vote[]
+// }
+
+// model Vote {
+//   id        String   @id @default(cuid())
+//   value     Int
+//   createdAt DateTime @default(now())
+
+//   userId    String
+//   postId    String?
+//   commentId String?
+
+//   user    Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+//   comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+//   @@unique([userId, postId])
+//   @@unique([userId, commentId])
+// }
+model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
@@ -36,7 +136,7 @@ model Community {
   banner      String?
   avatar      String?
   creatorId   String
-  creator     Users   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creator     User    @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
@@ -50,7 +150,7 @@ model CommunityMember {
   id          String    @id @default(cuid())
   userId      String
   communityId String
-  user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
   joinedAt    DateTime  @default(now())
 
@@ -67,7 +167,7 @@ model Post {
 
   authorId    String
   communityId String
-  author      Users     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
 
   // Relations
@@ -86,7 +186,7 @@ model Comment {
   postId   String
 
   parentId String?
-  author   Users   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author   User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   post     Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   // self relation for nested comments
@@ -104,7 +204,7 @@ model Vote {
   postId    String?
   commentId String?
 
-  user    Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 

@@ -58,7 +58,7 @@ export const register = async (request, response) => {
 
   const hashedPassword = await hashPassword(password);
   try {
-    const isUserExist = await prisma.users.findUnique({
+    const isUserExist = await prisma.user.findUnique({
       where: {
         email: email,
       },
@@ -70,7 +70,7 @@ export const register = async (request, response) => {
         message: "We have already a user with this email",
       });
     }
-    const user = await prisma.users.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email,
@@ -140,7 +140,7 @@ export const login = async (request, response) => {
   }
 
   try {
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         email: email,
       },
@@ -215,7 +215,7 @@ export const updateAvatar = async (request, response) => {
   const fullpath = process.env.BASEURL + uploadImage.path;
   const { id } = request.user;
   try {
-    const updateUser = await prisma.users.update({
+    const updateUser = await prisma.user.update({
       where: { id },
       data: {
         avatar: fullpath,
@@ -256,7 +256,7 @@ export const updateUserDetailsController = async (request, response) => {
   }
   try {
     if (bio) {
-      const updateBio = await prisma.users.update({
+      const updateBio = await prisma.user.update({
         where: { id },
         data: { bio: bio },
       });
@@ -279,7 +279,7 @@ export const updateUserDetailsController = async (request, response) => {
         message: "Valid name is required",
       });
     }
-    const updateName = await prisma.users.update({
+    const updateName = await prisma.user.update({
       where: { id },
       data: { name: name },
     });
@@ -313,7 +313,7 @@ export const userSession = async (request, response) => {
     });
   }
   try {
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: id,
       },
